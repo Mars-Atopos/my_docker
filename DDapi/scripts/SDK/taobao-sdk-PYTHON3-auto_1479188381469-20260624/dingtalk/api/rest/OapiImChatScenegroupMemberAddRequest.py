@@ -1,0 +1,17 @@
+'''
+Created by auto_sdk on 2025.07.02
+'''
+from dingtalk.api.base import RestApi
+class OapiImChatScenegroupMemberAddRequest(RestApi):
+	def __init__(self,url=None):
+		RestApi.__init__(self,url)
+		self.contact_staff_ids = None
+		self.open_conversation_id = None
+		self.union_ids = None
+		self.user_ids = None
+
+	def getHttpMethod(self):
+		return 'POST'
+
+	def getapiname(self):
+		return 'dingtalk.oapi.im.chat.scenegroup.member.add'

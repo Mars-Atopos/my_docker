@@ -1,0 +1,29 @@
+     1. config.py - 添加了淘宝SDK配置                                                                                 ◀
+     2. SDK/__init__.py - 添加了淘宝SDK路径
+     3. tools/tools.py - 添加了4个日程管理工具
+
+     新增工具：
+     - create_calendar_event - 创建钉钉日程
+     - update_calendar_event - 修改钉钉日程
+     - get_calendar_event_detail - 查询日程详情
+     - delete_calendar_event - 删除日程
+
+     使用方式：
+
+     cd F:\project\DDapi\scripts
+     python main.py
+
+     工具调用示例：
+
+     创建日程：create_calendar_event({"summary":"会议", "start_time":"2024-01-01 10:00", "end_time":"2024-01-01
+     11:00"})
+     查询详情：get_calendar_event_detail({"calendar_id":"xxx", "event_id":"xxx"})
+
+     ▣  Compose · MiMo-V2.5-Pro · 1m 40s                                                                  ⎘ copy  ▄
+
+  ┃
+  ┃  先让我看看你具体改了哪些代码  (按 Tab 采纳)
+  ┃
+  ┃  Compose · MiMo-V2.5-Pro Xiaomi · high
+  ╹▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+   208.2K (20%) · $0.31  tab 切换模式  ctrl+p 设置                               @ 添加文件  $ 子智能体  / 唤起命令
