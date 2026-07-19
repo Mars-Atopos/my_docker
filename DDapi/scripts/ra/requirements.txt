@@ -1,0 +1,6 @@
+langchain-classic
+langchain-milvus
+langchain-ollama
+ragas
+datasets
+pandas
