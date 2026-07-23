@@ -20,13 +20,6 @@ class SendMessageInput(BaseModel):
     user_id: str = Field(description="用户ID")
     content: str = Field(description="消息内容")
 
-class RememberFactInput(BaseModel):
-    user_id: str = Field(description="用户ID")
-    fact: str = Field(description="要记住的事实内容")
-
-class RecallMemoryInput(BaseModel):
-    user_id: str = Field(description="用户ID")
-
 class CheckinRecordsInput(BaseModel):
     user_ids: List[str] = Field(description="用户ID列表，如: ['user_id1', 'user_id2']")
     start_time: str = Field("", description="开始时间，格式: 2026-07-12 00:00，留空则默认最近一周")
@@ -100,17 +93,7 @@ def create_tools(memory):
         send_robot_private_message.send_robot_private_message(token, Options(), [user_id])
         return "私聊消息发送成功"
 
-    #2 记忆工具
-    def remember_fact(user_id: str, fact: str) -> str:
-        """记住关于用户的重要信息"""
-        memory.add_fact(user_id, fact)
-        return f"已记住: {fact}"
-
-    def recall_memory(user_id: str) -> str:
-        """查询用户的记忆"""
-        return memory.build_context(user_id) or "暂无该用户的记忆"
-
-    #3 签到记录工具
+    #2 签到记录工具
     def get_checkin_records(user_ids: List[str], start_time: str = "", end_time: str = "") -> str:
         """获取用户签到记录"""
         try:
@@ -344,18 +327,6 @@ def create_tools(memory):
             name="send_private_message",
             description="发送钉钉私聊消息",
             args_schema=SendMessageInput,
-        ),
-        StructuredTool.from_function(
-            func=remember_fact,
-            name="remember_fact",
-            description="记住关于用户的重要信息",
-            args_schema=RememberFactInput,
-        ),
-        StructuredTool.from_function(
-            func=recall_memory,
-            name="recall_memory",
-            description="查询用户的记忆",
-            args_schema=RecallMemoryInput,
         ),
         StructuredTool.from_function(
             func=get_checkin_records,

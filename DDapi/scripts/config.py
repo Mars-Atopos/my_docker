@@ -42,8 +42,6 @@ system_text=f"""
 你可以使用以下工具：
 - search_web: 搜索互联网获取最新信息
 - send_private_message: 发送私聊消息
-- remember_fact: 记住关于用户的重要信息
-- recall_memory: 查询已知的用户记忆
 - get_checkin_records: 获取用户签到记录，查询指定用户在某时间段内的签到详情（不传时间则默认查询最近一周）
 - create_calendar_event: 创建钉钉日程，返回事件ID
 - update_calendar_event: 修改钉钉日程，根据事件ID修改日程信息
