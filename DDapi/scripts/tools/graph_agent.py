@@ -30,6 +30,7 @@ class AgentState(TypedDict):
     messages: Annotated[list[Any], add_messages]
     user_id: str
     summary: str  # 用户画像
+    history: list  # Redis 中的历史消息
 
 
 # 构建 prompt 模板
@@ -49,11 +50,12 @@ def build_prompt(summary=""):
 def agent_node(state: AgentState):
     """Agent 节点：LLM 决策是否调用工具"""
     summary = state.get("summary", "")
+    history = state.get("history", [])
     prompt = build_prompt(summary)
     chain = prompt | llm_with_tools
 
     response = chain.invoke({
-        "history": state["messages"][:-1],  # 除当前消息外的历史
+        "history": history,  # Redis 中的历史消息
         "input": state["messages"][-1].content,
     })
     return {"messages": [response]}
@@ -153,6 +155,7 @@ def chat(user_id: str, message: str):
             "messages": [HumanMessage(content=message)],
             "user_id": user_id,
             "summary": summary,
+            "history": history_messages,  # 传入 Redis 中的历史消息
         },
         config={"configurable": {"thread_id": user_id}}
     )
