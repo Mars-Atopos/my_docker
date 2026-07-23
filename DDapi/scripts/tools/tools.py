@@ -65,7 +65,7 @@ def get_fresh_token():
     return token
 
 
-def create_tools(memory):
+def create_tools():
     """创建所有工具"""
 
     #0 搜索工具

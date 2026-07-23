@@ -14,7 +14,7 @@ from tools.memory_store import MemoryStore
 
 # 初始化
 memory = MemoryStore()
-tools = create_tools(memory)
+tools = create_tools()
 llm = config.llm
 llm_with_tools = llm.bind_tools(tools)
 
