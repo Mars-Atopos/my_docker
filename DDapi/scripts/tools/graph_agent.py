@@ -18,15 +18,11 @@ tools = create_tools(memory)
 llm = config.llm
 llm_with_tools = llm.bind_tools(tools)
 
-# Checkpointer（尝试 Redis，降级到 Memory）
-try:
-    from langgraph.checkpoint.redis import RedisSaver
-    checkpointer_cm = RedisSaver.from_conn_string(config.redis_url)
-    checkpointer = checkpointer_cm.__enter__()
-    checkpointer.setup()
-except Exception:
-    from langgraph.checkpoint.memory import MemorySaver
-    checkpointer = MemorySaver()
+# Redis Checkpointer
+from langgraph.checkpoint.redis import RedisSaver
+checkpointer_cm = RedisSaver.from_conn_string(config.redis_url)
+checkpointer = checkpointer_cm.__enter__()
+checkpointer.setup()
 
 
 # 定义状态

@@ -20,7 +20,7 @@ elif Model_id == 1:
 
 
 
-redis_url = "redis://localhost:6379/0"
+redis_url = "redis://localhost:6380/0"
 
 from datetime import datetime
 _current_date = datetime.now().strftime("%Y年%m月%d日")
