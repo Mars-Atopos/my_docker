@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import config
 from SDK import send_robot_private_message
+from rag.info_index import InfoIndex
 
 # 导入签到SDK
 import sys
@@ -55,6 +56,9 @@ class DeleteCalendarInput(BaseModel):
 class ListCalendarInput(BaseModel):
     start_time: str = Field("", description="开始时间，格式: 2026-07-12 00:00，留空则默认今天")
     end_time: str = Field("", description="结束时间，格式: 2026-07-12 23:59，留空则默认明天")
+
+class SearchDocInput(BaseModel):
+    query: str = Field(description="检索问题")
 
 
 def get_fresh_token():
@@ -312,6 +316,26 @@ def create_tools(memory):
             return f"查询日程列表失败: {str(e)}"
 
     # 工具返回
+    #5 文档检索工具
+    _info_index = None
+
+    def search_doc(query: str) -> str:
+        """从知识库中检索相关文档"""
+        nonlocal _info_index
+        try:
+            if _info_index is None:
+                _info_index = InfoIndex()
+            results = _info_index.search(query)
+            if not results:
+                return "未找到相关文档"
+            output = []
+            for i, doc in enumerate(results, 1):
+                source = doc.metadata.get("source", "未知来源")
+                output.append(f"[{i}] 来源: {source}\n{doc.page_content}")
+            return "\n\n".join(output)
+        except Exception as e:
+            return f"文档检索失败: {str(e)}"
+
     return [
         Tool(name="search_web", func=search_web,
              description="搜索互联网获取最新信息，用于新闻、天气、实时事件等需要联网查询的问题"),
@@ -368,5 +392,11 @@ def create_tools(memory):
             name="list_calendar_events",
             description="查询日程列表，获取指定时间段内的所有日程（不传时间则默认查询今天和明天）",
             args_schema=ListCalendarInput,
+        ),
+        StructuredTool.from_function(
+            func=search_doc,
+            name="search_doc",
+            description="从知识库中检索相关文档，用于回答与内部资料、规章制度、学习材料等相关的问题",
+            args_schema=SearchDocInput,
         ),
     ]

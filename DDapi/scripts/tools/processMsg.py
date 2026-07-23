@@ -35,10 +35,12 @@ class PrivateMessageHandler(dingtalk_stream.ChatbotHandler):
             reply = "好的，已为你开启新对话，之前的聊天记录已清空。不过我还记得你之前告诉我的事情哦~"
         else:
             try:
-                from tools.agent import chat
+                from tools.graph_agent import chat
                 reply = chat(user_id, message_text)
-            except Exception:
-                reply = "抱歉，处理消息时出现错误"
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                reply = f"抱歉，处理消息时出现错误: {e}"
 
         # 发送回复
         try:

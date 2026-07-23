@@ -37,6 +37,30 @@ class MemoryStore:
         old_session_id = f"{uid}:{new_num - 1}"
         self.rc.delete(f"lc:{old_session_id}:history")
         return f"{uid}:{new_num}"
+    
+    # ---- 对话历史（供 build_context 注入上下文）----
+    def save_turn(self, uid, user_msg, ai_msg):
+        """保存一轮对话"""
+        key = self._key(uid, "history")
+        entry = json.dumps({
+            "user": user_msg,
+            "ai": ai_msg,
+            "t": datetime.now().strftime("%Y-%m-%d %H:%M")
+        }, ensure_ascii=False)
+        self.rc.rpush(key, entry)
+        self.rc.ltrim(key, -20, -1)
+    def get_recent_history(self, uid, n=10):
+        """获取最近n轮对话"""
+        key = self._key(uid, "history")
+        raw = self.rc.lrange(key, -n, -1)
+        if not raw:
+            return ""
+        lines = []
+        for item in raw:
+            d = json.loads(item)
+            lines.append(f"用户: {d['user']}")
+            lines.append(f"小白: {d['ai']}")
+        return "\n".join(lines)
 
     # ---- 用户画像 + 长期记忆 ----
     def add_fact(self, uid, fact):
@@ -62,26 +86,17 @@ class MemoryStore:
     def get_summary(self, uid):
         return self.rc.get(self._key(uid, "summary")) or ""
 
-    # ---- 组装完整上下文 ----
-    def build_context(self, uid, recent_history=""):
-        """
-        组装注入 system prompt 的完整上下文
-        recent_history: 由外部（agent.py）从 LangChain 传入的最近对话文本
-        """
+    # ---- 组装完整上下文 ---- 
+    def build_context(self, uid):
+        """组装完整上下文"""
         parts = []
-
-        # 用户画像摘要
         summary = self.get_summary(uid)
         if summary:
             parts.append(f"【用户画像】\n{summary}")
-
-        # 已知事实
         facts = self.get_facts(uid)
         if facts:
             parts.append("【已知信息】\n" + "\n".join(f"- {f}" for f in facts))
-
-        # 最近对话（从外部传入）
-        if recent_history:
-            parts.append(f"【最近对话】\n{recent_history}")
-
+        recent = self.get_recent_history(uid)
+        if recent:
+            parts.append(f"【最近对话】\n{recent}")
         return "\n\n".join(parts) if parts else "（暂无该用户的历史信息）"

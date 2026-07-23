@@ -20,7 +20,7 @@ elif Model_id == 1:
 
 
 
-redis_url = "redis://localhost:6379/1"
+redis_url = "redis://localhost:6379/0"
 
 from datetime import datetime
 _current_date = datetime.now().strftime("%Y年%m月%d日")
@@ -61,3 +61,9 @@ unionid = "TVMEgtiiRNeFJgEZ0Wx8wHgiEiE"
 robot_code = "dingb3aht3nxge4fy9gr"
 chat_id = "184015005621"  # 群聊ID，在钉钉群设置中获取
 
+#需要添加的pdf路径
+PDF_BASE_PATH=r"F:\project\my_docker\DDapi\scripts\rag\pdf"
+
+# Milvus配置
+MILVUS_URI="http://localhost:19530"
+COLLECTION_NAME="dingding_info"
