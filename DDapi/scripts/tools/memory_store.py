@@ -58,10 +58,17 @@ class MemoryStore:
         messages = []
         for item in raw:
             d = json.loads(item)
-            if d["type"] == "human":
-                messages.append(HumanMessage(content=d["content"]))
-            elif d["type"] == "ai":
-                messages.append(AIMessage(content=d["content"]))
+            # 兼容新旧格式
+            if "type" in d:
+                # 新格式: {"type": "human", "content": "..."}
+                if d["type"] == "human":
+                    messages.append(HumanMessage(content=d["content"]))
+                elif d["type"] == "ai":
+                    messages.append(AIMessage(content=d["content"]))
+            elif "user" in d and "ai" in d:
+                # 旧格式: {"user": "...", "ai": "...", "t": "..."}
+                messages.append(HumanMessage(content=d["user"]))
+                messages.append(AIMessage(content=d["ai"]))
         return messages
 
     def get_all_history_text(self, uid):
@@ -71,8 +78,14 @@ class MemoryStore:
         lines = []
         for item in raw:
             d = json.loads(item)
-            role = "用户" if d["type"] == "human" else "小白"
-            lines.append(f"{role}: {d['content']}")
+            if "type" in d:
+                # 新格式
+                role = "用户" if d["type"] == "human" else "小白"
+                lines.append(f"{role}: {d['content']}")
+            elif "user" in d and "ai" in d:
+                # 旧格式
+                lines.append(f"用户: {d['user']}")
+                lines.append(f"小白: {d['ai']}")
         return "\n".join(lines)
 
     # ---- 轮数计数 ----
