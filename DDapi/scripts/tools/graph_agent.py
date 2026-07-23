@@ -147,21 +147,26 @@ graph = build_graph()
 
 def chat(user_id: str, message: str):
     """处理一轮对话"""
-    summary = memory.get_summary(user_id)
-    history_messages = memory.get_history_messages(user_id)
+    try:
+        summary = memory.get_summary(user_id)
+        history_messages = memory.get_history_messages(user_id)
 
-    result = graph.invoke(
-        {
-            "messages": [HumanMessage(content=message)],
-            "user_id": user_id,
-            "summary": summary,
-            "history": history_messages,  # 传入 Redis 中的历史消息
-        },
-        config={"configurable": {"thread_id": user_id}}
-    )
+        result = graph.invoke(
+            {
+                "messages": [HumanMessage(content=message)],
+                "user_id": user_id,
+                "summary": summary,
+                "history": history_messages,  # 传入 Redis 中的历史消息
+            },
+            config={"configurable": {"thread_id": user_id}}
+        )
 
-    for msg in reversed(result["messages"]):
-        if isinstance(msg, AIMessage):
-            return msg.content
+        for msg in reversed(result["messages"]):
+            if isinstance(msg, AIMessage):
+                return msg.content
 
-    return "抱歉，处理消息时出现错误"
+        return "抱歉，处理消息时出现错误"
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return f"抱歉，处理消息时出现错误: {str(e)}"

@@ -11,6 +11,8 @@ if Model_id==0:
     base_url="https://token-plan-cn.xiaomimimo.com/v1",
     api_key="tp-cyzx17i0bi8ea223x47pju8434es6zdi141uukbna25bcysh",
     model="xiaomi/mimo-v2.5-pro",
+    timeout=120,  # 2分钟超时
+    max_retries=2,  # 最多重试2次
     )
 elif Model_id == 1:
     from langchain_ollama import ChatOllama
