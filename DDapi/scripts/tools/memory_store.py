@@ -107,20 +107,11 @@ class MemoryStore:
         if not history_text:
             return None
 
-        if current_summary:
-            return f"""你是一个用户画像分析助手。请根据以下信息更新用户画像。
+        summary_section = f"\n【现有画像】\n{current_summary}\n" if current_summary else ""
+        action = "更新" if current_summary else "生成"
 
-【现有画像】
-{current_summary}
-
-【最近对话记录】
-{history_text}
-
-请用一段简洁的文字概括这个用户的特征（性格、喜好、职业、沟通风格等），不超过{MAX_SUMMARY_LEN}字。
-只输出画像内容，不要加任何前缀或解释。"""
-        else:
-            return f"""你是一个用户画像分析助手。请根据以下对话记录，生成用户画像。
-
+        return f"""你是一个用户画像分析助手。请根据以下信息{action}用户画像。
+{summary_section}
 【对话记录】
 {history_text}
 
